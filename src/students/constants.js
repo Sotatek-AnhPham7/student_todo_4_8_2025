@@ -6,4 +6,6 @@ export const SET_STUDENT_INPUT = "set_student_input";
 export const ADD_STUDENT = "add_student";
 export const SET_STUDENT = "set_student";
 export const SET_STUDENTS = "set_students";
+export const SET_SEARCH_VALUE = "set_search_value";
+export const SET_SEARCH_STUDENTS = "set_search_students";
 export const DELETE_STUDENT = "delete_student";

@@ -5,7 +5,10 @@ import {
   SET_STUDENT_INPUT_DOB,
   SET_STUDENT_INPUT_EMAIL,
   SET_STUDENT_INPUT,
+  SET_STUDENT,
   SET_STUDENTS,
+  SET_SEARCH_VALUE,
+  SET_SEARCH_STUDENTS,
   DELETE_STUDENT,
 } from "./constants";
 
@@ -39,12 +42,21 @@ export const setStudentInput = (input) => ({
 });
 
 export const setStudent = () => ({
-  type: SET_STUDENT_INPUT,
+  type: SET_STUDENT,
 });
 
 export const setStudents = (students) => ({
   type: SET_STUDENTS,
   payload: students,
+});
+
+export const setSearchValue = (value) => ({
+  type: SET_SEARCH_VALUE,
+  payload: value,
+});
+
+export const setSearchStudents = () => ({
+  type: SET_SEARCH_STUDENTS,
 });
 
 export const deleteStudent = (id) => ({

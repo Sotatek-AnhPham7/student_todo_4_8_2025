@@ -28,7 +28,6 @@ const StudentTable = () => {
     if (studentInput.id) {
       dispatch(actions.setStudent());
       setFormMode(false);
-      console.log("Cập nhật sinh viên:", students);
       message.success("Cập nhật sinh viên thành công!");
     } else {
       dispatch(actions.addStudent());

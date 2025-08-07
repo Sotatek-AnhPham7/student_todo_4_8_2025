@@ -4,6 +4,8 @@ import {
   ADD_STUDENT,
   SET_STUDENT,
   SET_STUDENTS,
+  SET_SEARCH_VALUE,
+  SET_SEARCH_STUDENTS,
   DELETE_STUDENT,
   SET_STUDENT_INPUT_NAME,
   SET_STUDENT_INPUT_EMAIL,
@@ -15,6 +17,8 @@ const initialState = {
   students: [],
   studentInput: {},
   initID: 100,
+  search: "",
+  initialStudents: [],
 };
 
 function reducer(state, action) {
@@ -68,6 +72,7 @@ function reducer(state, action) {
     case SET_STUDENTS:
       return {
         ...state,
+        initialStudents: action.payload,
         students: action.payload,
       };
     case SET_STUDENT:
@@ -75,6 +80,22 @@ function reducer(state, action) {
         ...state,
         students: state.students.map((student) =>
           student.id === state.studentInput.id ? state.studentInput : student
+        ),
+      };
+    case SET_SEARCH_VALUE:
+      return {
+        ...state,
+        search: action.payload,
+      };
+    case SET_SEARCH_STUDENTS:
+      return {
+        ...state,
+        students: state.initialStudents.filter(
+          (student) =>
+            student.fullName
+              .toLowerCase()
+              .includes(state.search.toLowerCase()) ||
+            student.email.toLowerCase().includes(state.search.toLowerCase())
         ),
       };
     case DELETE_STUDENT:
