@@ -1,0 +1,9 @@
+export const SET_STUDENT_INPUT_NAME = "set_student_input_name";
+export const SET_STUDENT_INPUT_CLASS = "set_student_input_class";
+export const SET_STUDENT_INPUT_DOB = "set_student_input_dob";
+export const SET_STUDENT_INPUT_EMAIL = "set_student_input_email";
+export const SET_STUDENT_INPUT = "set_student_input";
+export const ADD_STUDENT = "add_student";
+export const SET_STUDENT = "set_student";
+export const SET_STUDENTS = "set_students";
+export const DELETE_STUDENT = "delete_student";
