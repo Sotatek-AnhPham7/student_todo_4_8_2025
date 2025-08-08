@@ -1,0 +1,14 @@
+@import "normalize.css";
+@import url("https://fonts.googleapis.com/css2?family=Libertinus+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Playwrite+HU:wght@100..400&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color: gray;
+  text-align: center;
+  h1 {
+    font-family: "Libertinus Serif", serif;
+  }
+}

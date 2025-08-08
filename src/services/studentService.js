@@ -1,7 +1,4 @@
-// import { StudentContext, useStudents } from "../students";
-
-//fetch ...
-// const [students, studentInput] = state;
+import axios from "axios";
 
 const columns = [
   {
@@ -26,61 +23,53 @@ const columns = [
   },
 ];
 
-// let idCounter = students.length + 1;
+const getStudents = async () => {
+  try {
+    const response = await axios.get(
+      "https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students"
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    return [];
+  }
+};
 
-// export function addStudent(student) {
-//   const newStudent = {
-//     ...student,
-//     id: idCounter.toString(),
-//   };
-//   idCounter++;
-//   students.push(newStudent);
-//   return newStudent;
-// }
+const addStudent = async (student) => {
+  try {
+    const response = await axios.post(
+      "https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students",
+      student
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding student:", error);
+    throw error;
+  }
+};
 
-// export function updateStudent(id, updatedStudent) {
-//   const index = students.findIndex((s) => s.id === id);
-//   if (index !== -1) {
-//     students[index] = { ...students[index], ...updatedStudent };
-//     return true;
-//   }
-//   return false;
-// }
+const updateStudent = async (student) => {
+  try {
+    const response = await axios.put(
+      `https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students/${student.id}`,
+      student
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating student:", error);
+    throw error;
+  }
+};
 
-// export function deleteStudent(id) {
-//   const index = students.findIndex((s) => s.id === id);
-//   if (index !== -1) {
-//     students.splice(index, 1);
-//     return true;
-//   }
-//   return false;
-// }
+const deleteStudent = async (id) => {
+  try {
+    await axios.delete(
+      `https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students/${id}`
+    );
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    throw error;
+  }
+};
 
-function getStudents() {
-  const student = [
-    {
-      id: "1",
-      fullName: "Nguyễn Văn A",
-      email: "vana@example.com",
-      dob: "2002-01-01",
-      class: "CNTT1",
-    },
-    {
-      id: "2",
-      fullName: "Trần Thị B",
-      email: "thib@example.com",
-      dob: "2002-02-15",
-      class: "CNTT2",
-    },
-    {
-      id: "3",
-      fullName: "Lê Văn C",
-      email: "vanc@example.com",
-      dob: "2001-12-10",
-      class: "CNTT1",
-    },
-  ];
-  return student;
-}
-
-export { columns, getStudents };
+export { columns, getStudents, addStudent, updateStudent, deleteStudent };

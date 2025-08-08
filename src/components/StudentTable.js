@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { Table, Button, Space, Modal, message } from "antd";
 import { EditFilled, DeleteFilled, PlusOutlined } from "@ant-design/icons";
 import StudentFormModal from "./StudentFormModal";
-import { columns, getStudents } from "../services/studentService";
+import {
+  columns,
+  getStudents,
+  addStudent,
+  updateStudent,
+  deleteStudent,
+} from "../services/studentService";
 import { useStudents, actions } from "../students";
 
 const StudentTable = () => {
@@ -10,7 +16,12 @@ const StudentTable = () => {
   const [formMode, setFormMode] = useState(false);
   const { students, studentInput } = state;
   useEffect(() => {
-    dispatch(actions.setStudents(getStudents()));
+    dispatch(actions.setStudents([]));
+    const fetchStudents = async () => {
+      const fetchedStudents = await getStudents();
+      dispatch(actions.setStudents(fetchedStudents));
+    };
+    fetchStudents();
     dispatch(actions.setStudentInput(null));
   }, []);
 
@@ -26,19 +37,37 @@ const StudentTable = () => {
 
   const handleModalSubmit = () => {
     if (studentInput.id) {
-      dispatch(actions.setStudent());
-      setFormMode(false);
-      message.success("Cập nhật sinh viên thành công!");
+      const updatedStudent = async () => {
+        try {
+          await updateStudent(studentInput);
+          dispatch(actions.setStudent());
+          dispatch(actions.setStudentInput(null));
+          message.success("Cập nhật sinh viên thành công!");
+        } catch (error) {
+          message.error("Cập nhật sinh viên thất bại!");
+          dispatch(actions.setStudentInput(null));
+        }
+      };
+      updatedStudent();
     } else {
-      dispatch(actions.addStudent());
-      setFormMode(false);
-      message.success("Thêm sinh viên thành công!");
+      const addedStudent = async () => {
+        try {
+          const newStudent = await addStudent(studentInput);
+          dispatch(actions.setStudentInput(newStudent));
+          dispatch(actions.addStudent());
+          dispatch(actions.setStudentInput(null));
+          message.success("Thêm sinh viên thành công!");
+        } catch (error) {
+          message.error("Thêm sinh viên thất bại!");
+          dispatch(actions.setStudentInput(null));
+        }
+      };
+      addedStudent();
     }
   };
 
   const handleModalClose = () => {
     setFormMode(false);
-    dispatch(actions.setStudentInput(null));
   };
 
   const handleDelete = (student) => {
@@ -49,8 +78,16 @@ const StudentTable = () => {
       okType: "danger",
       cancelText: "Huỷ",
       onOk: () => {
-        dispatch(actions.deleteStudent(student.id));
-        message.success("Đã xoá thành công!");
+        const deletedStudent = async () => {
+          try {
+            await deleteStudent(student.id);
+            dispatch(actions.deleteStudent(student.id));
+            message.success("Đã xoá thành công!");
+          } catch (error) {
+            message.error("Xoá sinh viên thất bại!");
+          }
+        };
+        deletedStudent();
       },
     });
   };
