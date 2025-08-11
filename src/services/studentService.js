@@ -1,75 +1,24 @@
-import axios from "axios";
+// src/services/studentService.js
+import axiosInstance from "./axiosInstance";
 
-const columns = [
-  {
-    title: "Full Name",
-    dataIndex: "fullName",
-    key: "fullName",
-  },
-  {
-    title: "Email",
-    dataIndex: "email",
-    key: "email",
-  },
-  {
-    title: "Date of Birth",
-    dataIndex: "dob",
-    key: "dob",
-  },
-  {
-    title: "Class",
-    dataIndex: "class",
-    key: "class",
-  },
-];
-
-const getStudents = async () => {
+// Helper gọi API
+const handleRequest = async (request) => {
   try {
-    const response = await axios.get(
-      "https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students"
-    );
+    const response = await request;
     return response.data;
   } catch (error) {
-    console.error("Error fetching students:", error);
-    return [];
-  }
-};
-
-const addStudent = async (student) => {
-  try {
-    const response = await axios.post(
-      "https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students",
-      student
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error adding student:", error);
+    console.error("API error:", error);
     throw error;
   }
 };
 
-const updateStudent = async (student) => {
-  try {
-    const response = await axios.put(
-      `https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students/${student.id}`,
-      student
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error updating student:", error);
-    throw error;
-  }
-};
+export const getStudents = () => handleRequest(axiosInstance.get("/students"));
 
-const deleteStudent = async (id) => {
-  try {
-    await axios.delete(
-      `https://6895796f039a1a2b288f43fd.mockapi.io/api/students/students/${id}`
-    );
-  } catch (error) {
-    console.error("Error deleting student:", error);
-    throw error;
-  }
-};
+export const addStudent = (student) =>
+  handleRequest(axiosInstance.post("/students", student));
 
-export { columns, getStudents, addStudent, updateStudent, deleteStudent };
+export const updateStudent = (student) =>
+  handleRequest(axiosInstance.put(`/students/${student.id}`, student));
+
+export const deleteStudent = (id) =>
+  handleRequest(axiosInstance.delete(`/students/${id}`));

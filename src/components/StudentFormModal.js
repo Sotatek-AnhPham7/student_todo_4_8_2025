@@ -1,31 +1,42 @@
-import React, { act, useEffect, useState } from "react";
-import { Modal, Button, Form, Input } from "antd";
-import { useStudents, actions } from "../students";
+import { useEffect, useMemo } from "react";
+import { Modal, Form, Input, DatePicker } from "antd";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  selectStudentInput,
+  updateStudentInputField,
+} from "../redux/studentSlice";
+import dayjs from "dayjs";
 
 const StudentFormModal = ({ visible, onClose, onSubmit }) => {
-  const [state, dispatch] = useStudents();
-  const { studentInput } = state;
+  const dispatch = useDispatch();
+  const studentInput = useSelector(selectStudentInput);
   const [form] = Form.useForm();
-  const formMode = React.useMemo(() => {
-    return studentInput && studentInput.id ? "edit" : "add";
-  }, [studentInput]);
+
+  const formMode = useMemo(
+    () => (studentInput && studentInput.id ? "edit" : "add"),
+    [studentInput]
+  );
 
   useEffect(() => {
     if (visible) {
       if (studentInput) {
-        form.setFieldsValue(studentInput);
+        form.setFieldsValue({
+          ...studentInput,
+          dob: studentInput.dob ? dayjs(studentInput.dob) : null,
+        });
       } else {
         form.resetFields();
       }
     }
-  }, [visible, studentInput]);
+  }, [visible, studentInput, form]);
 
   const handleFinish = (values) => {
-    if (formMode === "edit") {
-      onSubmit({ ...studentInput, ...values });
-    } else {
-      onSubmit(values);
-    }
+    const payload = {
+      ...studentInput,
+      ...values,
+      dob: values.dob ? values.dob.format("YYYY-MM-DD") : null,
+    };
+    onSubmit(payload);
     form.resetFields();
     onClose();
   };
@@ -44,41 +55,73 @@ const StudentFormModal = ({ visible, onClose, onSubmit }) => {
           label="Họ tên"
           name="fullName"
           rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
-          onChange={(e) => {
-            dispatch(actions.setStudentInputName(e.target.value));
-          }}
         >
-          <Input />
+          <Input
+            onChange={(e) =>
+              dispatch(
+                updateStudentInputField({
+                  field: "fullName",
+                  value: e.target.value,
+                })
+              )
+            }
+          />
         </Form.Item>
+
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, message: "Vui lòng nhập email!" }]}
-          onChange={(e) => {
-            dispatch(actions.setStudentInputEmail(e.target.value));
-          }}
+          rules={[
+            { required: true, message: "Vui lòng nhập email!" },
+            { type: "email", message: "Email không hợp lệ!" },
+          ]}
         >
-          <Input />
+          <Input
+            onChange={(e) =>
+              dispatch(
+                updateStudentInputField({
+                  field: "email",
+                  value: e.target.value,
+                })
+              )
+            }
+          />
         </Form.Item>
+
         <Form.Item
           label="Ngày sinh"
           name="dob"
-          rules={[{ required: true, message: "Vui lòng nhập ngày sinh!" }]}
-          onChange={(e) => {
-            dispatch(actions.setStudentInputDob(e.target.value));
-          }}
+          rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
         >
-          <Input />
+          <DatePicker
+            format="YYYY-MM-DD"
+            onChange={(date, dateString) =>
+              dispatch(
+                updateStudentInputField({
+                  field: "dob",
+                  value: dateString,
+                })
+              )
+            }
+            style={{ width: "100%" }}
+          />
         </Form.Item>
+
         <Form.Item
           label="Lớp"
           name="class"
           rules={[{ required: true, message: "Vui lòng nhập lớp!" }]}
-          onChange={(e) => {
-            dispatch(actions.setStudentInputClass(e.target.value));
-          }}
         >
-          <Input />
+          <Input
+            onChange={(e) =>
+              dispatch(
+                updateStudentInputField({
+                  field: "class",
+                  value: e.target.value,
+                })
+              )
+            }
+          />
         </Form.Item>
       </Form>
     </Modal>

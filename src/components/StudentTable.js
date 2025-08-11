@@ -1,75 +1,66 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Table, Button, Space, Modal, message } from "antd";
 import { EditFilled, DeleteFilled, PlusOutlined } from "@ant-design/icons";
+import { useSelector, useDispatch } from "react-redux";
 import StudentFormModal from "./StudentFormModal";
+import columns from "../services/studentColumns";
 import {
-  columns,
-  getStudents,
-  addStudent,
-  updateStudent,
-  deleteStudent,
-} from "../services/studentService";
-import { useStudents, actions } from "../students";
+  fetchStudents,
+  addStudentAsync,
+  updateStudentAsync,
+  deleteStudentAsync,
+  setStudentInput,
+  clearStudentInput,
+} from "../redux/studentSlice";
 
 const StudentTable = () => {
-  const [state, dispatch] = useStudents();
-  const [formMode, setFormMode] = useState(false);
-  const { students, studentInput } = state;
+  const dispatch = useDispatch();
+  const { students = [], studentInput } = useSelector(
+    (state) => state.students
+  );
+
+  // Load danh sách + clear form khi mount
   useEffect(() => {
-    dispatch(actions.setStudents([]));
-    const fetchStudents = async () => {
-      const fetchedStudents = await getStudents();
-      dispatch(actions.setStudents(fetchedStudents));
-    };
-    fetchStudents();
-    dispatch(actions.setStudentInput(null));
-  }, []);
+    dispatch(fetchStudents());
+    dispatch(clearStudentInput());
+  }, [dispatch]);
 
+  // Mở modal thêm mới
   const openAddModal = () => {
-    dispatch(actions.setStudentInput({}));
-    setFormMode(true);
+    dispatch(setStudentInput({}));
   };
 
+  // Mở modal edit
   const handleEditModal = (student) => {
-    dispatch(actions.setStudentInput(student));
-    setFormMode(true);
+    dispatch(setStudentInput(student));
   };
 
-  const handleModalSubmit = () => {
-    if (studentInput.id) {
-      const updatedStudent = async () => {
-        try {
-          await updateStudent(studentInput);
-          dispatch(actions.setStudent());
-          dispatch(actions.setStudentInput(null));
-          message.success("Cập nhật sinh viên thành công!");
-        } catch (error) {
-          message.error("Cập nhật sinh viên thất bại!");
-          dispatch(actions.setStudentInput(null));
-        }
-      };
-      updatedStudent();
-    } else {
-      const addedStudent = async () => {
-        try {
-          const newStudent = await addStudent(studentInput);
-          dispatch(actions.setStudentInput(newStudent));
-          dispatch(actions.addStudent());
-          dispatch(actions.setStudentInput(null));
-          message.success("Thêm sinh viên thành công!");
-        } catch (error) {
-          message.error("Thêm sinh viên thất bại!");
-          dispatch(actions.setStudentInput(null));
-        }
-      };
-      addedStudent();
+  // Submit form (thêm hoặc sửa)
+  const handleModalSubmit = async () => {
+    try {
+      if (studentInput.id) {
+        await dispatch(updateStudentAsync(studentInput)).unwrap();
+        message.success("Cập nhật sinh viên thành công!");
+      } else {
+        await dispatch(addStudentAsync(studentInput)).unwrap();
+        message.success("Thêm sinh viên thành công!");
+      }
+    } catch {
+      message.error(
+        studentInput.id
+          ? "Cập nhật sinh viên thất bại!"
+          : "Thêm sinh viên thất bại!"
+      );
+    } finally {
+      dispatch(clearStudentInput());
     }
   };
 
   const handleModalClose = () => {
-    setFormMode(false);
+    dispatch(clearStudentInput());
   };
 
+  // Xoá sinh viên
   const handleDelete = (student) => {
     Modal.confirm({
       title: "Xác nhận xoá",
@@ -77,17 +68,13 @@ const StudentTable = () => {
       okText: "Xoá",
       okType: "danger",
       cancelText: "Huỷ",
-      onOk: () => {
-        const deletedStudent = async () => {
-          try {
-            await deleteStudent(student.id);
-            dispatch(actions.deleteStudent(student.id));
-            message.success("Đã xoá thành công!");
-          } catch (error) {
-            message.error("Xoá sinh viên thất bại!");
-          }
-        };
-        deletedStudent();
+      async onOk() {
+        try {
+          await dispatch(deleteStudentAsync(student.id)).unwrap();
+          message.success("Đã xoá thành công!");
+        } catch {
+          message.error("Xoá sinh viên thất bại!");
+        }
       },
     });
   };
@@ -124,12 +111,13 @@ const StudentTable = () => {
       </Button>
 
       <Table
-        dataSource={students.map((s) => ({ ...s, key: s.id }))}
+        rowKey="id"
+        dataSource={students}
         columns={[...columns, actionColumn]}
       />
 
       <StudentFormModal
-        visible={formMode}
+        visible={!!studentInput}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
       />

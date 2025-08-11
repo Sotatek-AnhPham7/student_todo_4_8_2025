@@ -1,6 +1,4 @@
-import React from "react";
 import StudentTable from "../components/StudentTable";
-import Search from "antd/es/transfer/search";
 import StudentSearch from "../components/StudentSearch";
 
 function HomePage() {

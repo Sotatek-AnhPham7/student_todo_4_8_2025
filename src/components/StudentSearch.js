@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "antd";
-import { useStudents, actions } from "../students";
+import { useSelector, useDispatch } from "react-redux";
+import { setSearchValue } from "../redux/studentSlice";
 
 const { Search } = Input;
 
 const StudentSearch = () => {
-  const [state, dispatch] = useStudents();
-  const { search } = state;
+  const dispatch = useDispatch();
+  const search = useSelector((state) => state.students.search);
 
   const handleSearchChange = (e) => {
-    dispatch(actions.setSearchValue(e.target.value));
-    dispatch(actions.setSearchStudents()); // Nếu cần tìm kiếm ngay khi nhập
+    dispatch(setSearchValue(e.target.value));
   };
 
   return (
@@ -18,18 +18,15 @@ const StudentSearch = () => {
       style={{
         display: "flex",
         justifyContent: "center",
-        marginBottom: "16px",
+        marginBottom: 16,
       }}
     >
-      <div style={{ maxWidth: "220px", width: "100%" }}>
+      <div style={{ maxWidth: 220, width: "100%" }}>
         <Search
           placeholder="Nhập từ khóa tìm kiếm"
           onChange={handleSearchChange}
           value={search}
-          // onSearch={(value) => {
-          //   console.log("Search submitted:", value);
-          //   dispatch(actions.setSearchStudents());
-          // }} // Tìm kiếm sau khi nhấn tìm kiếm
+          allowClear
         />
       </div>
     </div>

@@ -1,19 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+
 import reportWebVitals from "./reportWebVitals";
-import { StudentProvider } from "./students";
+import { store } from "./redux";
+import { Provider } from "react-redux";
 import "./components/GlobalStyles";
 import GlobalStyles from "./components/GlobalStyles";
+import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
-  <StudentProvider>
-    {/* <GlobalStyles> */}
-    <App />
-    {/* </GlobalStyles> */}
-  </StudentProvider>
+  <GlobalStyles>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </GlobalStyles>
   // </React.StrictMode>
 );
 
